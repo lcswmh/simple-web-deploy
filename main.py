@@ -17,6 +17,11 @@ app = FastAPI() #创建 FastAPI 应用实例
 #挂载静态文件：访问 /static 路径时，会从项目根目录下的 static 文件夹中读取文件。name 参数用于命名
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+@app.get("/")
+async def root():
+    return RedirectResponse(url="/static/index.html")
+
+
 def create_short_url(original_url,db):
     """
     定义一个辅助函数，负责生成唯一的短码并保存到数据库
