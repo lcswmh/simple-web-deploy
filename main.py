@@ -7,6 +7,12 @@ from pydantic import BaseModel,HttpUrl #Pydantic 的 BaseModel：用于定义请
 from fastapi.staticfiles import StaticFiles #从FastAPI库中导入一个专门用来处理静态文件的工具类，
 import  uvicorn #导入 ASGI 服务器，用于直接运行脚本时启动服务
 
+
+import os   # 如果已经有这一行就不用重复加
+
+# 从环境变量中读取基础网址，如果没有设置就默认使用本地地址
+BASE_URL = os.getenv("BASE_URL", "http://127.0.0.1:8000")
+
 class Url(BaseModel):
     """
     定义一个 Pydantic 模型 Url,包含一个字段 original_url，类型为 HttpUrl。FastAPI 会自动校验请求体是否符合这个格式
@@ -37,9 +43,7 @@ def create_short_url(original_url,db):
     else:
         raise HTTPException(status_code=500, detail="短码生成失败，请重试") #都有则抛出 500 错误
     insert_url(db,original_url,gsc) #调用 insert_url 将长链接和短码存入数据库
-    return {
-        "short_url": f'http://127.0.0.1:8000/{gsc}',
-        }
+    return {"short_url": f"{BASE_URL}/{gsc}"}
 
 @app.post("/shorten") #定义 POST 接口 /shorten
 async def shorten_url(original_url:Url,db: Session = Depends(get_db)):
