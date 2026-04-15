@@ -1,0 +1,9 @@
+# 排除 __pycache__ 文件夹及其所有内容
+__pycache__/
+
+# 排除 Docker 相关文件
+docker-compose.yml
+Dockerfile
+
+# 排除 requirements.txt
+requirements.txt

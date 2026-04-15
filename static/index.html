@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {font-family: Arial; margin: 40px;}
+        input,button {padding: 8px; font-size: 16px;}
+        .result {margin-top: 20px;}
+    </style>
+</head>
+<body>
+    <div>短链接服务</div>
+    <input type="text" id="longUrl" placeholder="输入长连接" style="width: 300px;">
+    <button onclick="shorten()">生成短链接</button>
+    <div class="result" id="result"></div>
+    <script>
+        async function shorten(){
+            #获取输入框的值，如果为空弹出警告
+            const url =  document.getElementById('longUrl').value;
+            console.log(url);
+            if (!url){
+                alert('请输入链接');
+                return;
+            }
+            //fetch这是浏览器自带的网络请求功能。
+            const response = await fetch('/shorten',{ //后台服务器地址
+                method:'POST', //告诉服务器，我是来提交数据的
+                headers:{'Content-Type': 'application/json'}, //设置数据的格式类型
+                //服务器通常只懂 JSON 格式的数据。这行代码把 { original_url: url } 这个对象转换成json字符串发给服务器
+                body:JSON.stringify({original_url:url})
+            });
+            if(response.ok){
+                // 把服务器返回的数据解析成 JavaScript 对象。假设服务器返回 { "short_url": "http://t.cn/xyz" }
+                const data = await response.json();
+                // 修改页面上 id="result" 的那个盒子的内容，把短链接显示出来，并且做成一个可点击的超链接 (<a> 标签)
+                document.getElementById('result').innerHTML = `短链接：<a href="${data.short_url}" target="_blank">${data.short_url}</a>`
+            } else {
+                document.getElementById('result').innerHTML = `错误:${response.status}`
+            }
+        }
+    </script>
+</body>
+</html>
